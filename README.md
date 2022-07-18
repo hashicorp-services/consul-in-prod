@@ -77,9 +77,8 @@ Each implementation has an edition/variation for each technical platform:
 
 ## Production Scope
 
+<a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/iaas-high-availability-disaster-recovery"><img alt="Azure sample" align="right" width="200" src="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/media/ha-decision-tree.png"></a>
 NOTE: This document does not cover setting up of a single stand-alone Consul cluster for purpose of demonstration.
-
-<a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/iaas-high-availability-disaster-recovery"><img alt="Azure sample" src="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/media/ha-decision-tree.png"></a>
 
 
 <a name="RefArch"></a>
@@ -154,13 +153,13 @@ I. Serverless (AWS Lambda, Azure & GCP Functions) running within clouds<br />
 
 ## DevSecOps Workflow
 
-<a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/devsecops-infrastructure-as-code"><img alt="Azure CI/CD" width="200" src="https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/media/devsecops-for-iac.png"></a> 
+<a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/devsecops-infrastructure-as-code"><img align="right" alt="Azure CI/CD" width="200" src="https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/media/devsecops-for-iac.png"></a> 
 To save time, enable collaboration, ensure repeatability, and avoid mistakes, the <a name="ConsulFeatures">Consul features above</a> are instantiated using <strong>modern DevSecOps principles</strong>:
 
 * Self-serve Shift-left for developer efficiency (TFSec on desktops)
 * Version control code with code reviews (in GitHub)
-* Automated CI/CD (GitHub Actions) for speed and comprehensive security scanning
-   <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/devsecops-in-github"><img alt="GitHub on Azure" src="https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/media/devsecops-in-github-data-flow.png"></a>
+* <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/devsecops-in-github"><img alt="GitHub on Azure" align="right" width="200" src="https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/media/devsecops-in-github-data-flow.png"></a>
+Automated CI/CD (GitHub Actions) for speed and comprehensive security scanning. TODO: Adadpt example from Azure:
 
 * Infrastructure-as-Code HashiCorp <a target="_blank" href="https://www.youtube.com/watch?v=uBfUN6PemIk" title="Provision to Production with Terraform Enterprise">Terraform Enterprise Workspaces</a> invoked by Bash shell scripts. 
 
