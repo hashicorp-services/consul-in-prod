@@ -14,7 +14,7 @@ To ensure production-level reliability at Enterpise scale, each implementation i
    * 5 nodes per datacenter
    * a datacenter in 3 availability zones
    * network peering between two regions
-   * a real-world sample application with microservices (front-end, back-end business logic, inventory, shipment, payment, mail/SMS, etc.)
+   * a real-world sample e-commerce application with microservices (front-end, back-end business logic, inventory, shipment, payment, mail/SMS, etc.)
    <br /><br />
 
 <a name="Implementations"></a>
@@ -37,11 +37,13 @@ Each <a href="#Implementations">implementation above</a> makes use of Enterprise
 
    1. <strong>Centralized identity-based authentication</strong> for users and service accounts (with SSO and MFA using Okta)
    1. <strong>Centralized secrets</strong> management (using Vault)
-   1. <strong>Encryption</strong> of data in transit and at rest (using Vault)
-   1. Segregation of data into different <strong>data Namespaces</strong> to reduce access to data in case of breach (which we assume will occur)
+   1. <strong>Centralized service registry</strong> (Key/Value store) 
+   
+   1. <strong>Encryption</strong> of app data in transit and at rest (using Vault)
+   1. Segregation of app data into different <strong>data Namespaces</strong> to reduce access to data in case of breach (which we assume will occur)
 
    1. <strong>Segmentation of network</strong> traffic to restrict network access in case of breach (which we assume will occur)
-   1. <strong>Layer 7 Traffic Managment</strong> for Canary testing, A/B tests, blue/green deploys, and soft multi-tenancy (instead of "East/West" Load Balancers)
+   1. <strong>Layer 7 Traffic Managment</strong> for Canary testing, A/B tests, blue/green deploys, and soft multi-tenancy (instead of front-end "East/West" Load Balancers)
    1. Use of Access Control Lists (<strong>ACLs</strong>) to enforce least-privilege access
    
    1. <strong>Read replicas</strong> to ensure performance and reliability as systems scale
