@@ -1,5 +1,4 @@
-# consul-in-prod
-Procedures and assets to create Enterprise-grade Consul &amp;amp; Vault in production
+# hashicorp-services/consul-in-prod
 
 This book provides instructions to create -- for <strong>production</strong> usage -- 
 the most common use of <strong>HashiCorp Consul</strong> within a Global 2000 enterprise.
@@ -23,11 +22,13 @@ To ensure production-level reliability at Enterpise scale, each implementation i
 Consul is designed to automatically detect resources, then securely route network traffic to them, even across disparate platforms (via a Consul API Gateway):
 
    A. Serverless (AWS Lambda, Azure & GCP Functions) running within clouds<br />
-   B. Google Kubernetes with Service Mesh<br />
-   C. Database outside Kubernetes<br />
-   D. VMWare<br />
-   E. Pivotal Cloud Foundary<br />
-   F. RedHat OpenShift<br />
+   B. Database outside Kubernetes<br />
+   C. AWS EC2 image in AWS<br />
+   D. AWS ECS (Elastic Container Service)<br />
+   E. AWS EKS (Elastic Kubernetes Service) with Service Mesh<br />
+   F. VMWare<br />
+   G. Pivotal Cloud Foundary<br />
+   H. RedHat OpenShift<br />
 </ul>
 
 <a name="Requirements"></a>
