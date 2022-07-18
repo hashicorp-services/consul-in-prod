@@ -41,7 +41,7 @@ Each <a href="#Implementations">implementation above</a> makes use of Enterprise
    1. Segregation of data into different <strong>data Namespaces</strong> to reduce access to data in case of breach (which we assume will occur)
 
    1. <strong>Segmentation of network</strong> traffic to restrict network access in case of breach (which we assume will occur)
-   1. <strong>Layer 7 Traffic Managment</strong> for Canary testing, A/B tests, blue/green deploys, and soft multi-tenancy   
+   1. <strong>Layer 7 Traffic Managment</strong> for Canary testing, A/B tests, blue/green deploys, and soft multi-tenancy (instead of "East/West" Load Balancers)
    1. Use of Access Control Lists (<strong>ACLs</strong>) to enforce least-privilege access
    
    1. <strong>Read replicas</strong> to ensure performance and reliability as systems scale
