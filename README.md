@@ -22,13 +22,14 @@ To ensure production-level reliability at Enterpise scale, each implementation i
 
 Consul is designed to automatically detect resources, then securely route network traffic to them.
 So this book provides procedures and automation that brings up apps and databases running in each of these platforms:
-
+<ul>
    A. Serverless (AWS Lambda, Azure & GCP Functions) running within clouds<br />
    B. VMWare<br />
    C. Pivotal Cloud Foundary<br />
    D. RedHat OpenShift<br />
    E. Google Kubernetes with Service Mesh<br />
    <br /><br />
+</ul>
 
 <a name="Requirements"></a>
 
