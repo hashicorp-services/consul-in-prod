@@ -18,6 +18,8 @@ This presents procedures and automation for creating Consul within each cloud:
 <br /><br />
 
 
+<a name="OS-Platforms"></a>
+
 ## OS Platforms
 
 Each implementation has an edition/variation for each technical platform:
@@ -35,7 +37,7 @@ To ensure production-level reliability at Enterpise scale, each implementation h
 
 * <a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1655690643/vault-multi-region-map-1298x728_yjgvcv.png"><img align="right" alt="multi-region" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1655690643/vault-multi-region-map-1298x728_yjgvcv.png"></a>Two regions peered together, with 5 nodes per datacenter across 3 Availability Zones (each a separate VPC)
 
-* Although Consul works with multiple platform technologies, a Linux-based sample e-commerce application (HashiCups?) running in Kubernetes with a server node for each of these APIs:
+* <a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1658153413/app-east-west-968x897_nspfgj.png"><img align="right" alt="app layers" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1658153413/app-east-west-968x897_nspfgj.png"></a>Although Consul works with multiple platform technologies, a Linux-based sample e-commerce application (HashiCups?) running in Kubernetes with a server node for each of these APIs:
    * front-end
    * product
    * shipment
@@ -72,7 +74,7 @@ I. Serverless (AWS Lambda, Azure & GCP Functions) running within clouds<br />
 
 To save time, enable collaboration, ensure repeatability, and avoid mistakes, the <a name="Requirements">Consul features above</a> are instantiated using <strong>modern DevSecOps principles</strong>:
 
-* Version control code (in GitHub)
+* Version control code with code reviews (in GitHub)
 * Infrastructure-as-Code HashiCorp Terraform and Bash shell scripts 
 * Helm charts
 * Automated CI/CD (GitHub Actions) for speed and comprehensive security scanning
@@ -97,11 +99,15 @@ Among the many variations, here are the priorities for development:
    * https://github.com/samgabrail/web-blog-vault
    <br /><br />
 
+1. AWS
+1. Azure
+<br /><br />
 
 <a name="Requirements"></a>
 
 ## Consul features used
 
+<a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1653578783/consul-tf-vault-1162x809_lypmvs.png"><img align="right" alt="consul tf vault" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1653578783/consul-tf-vault-1162x809_lypmvs.png"></a>
 Each <a href="#Implementations">implementation above</a> makes use of Enterprise-grade Consul and Vault to satisfy Zero-Trust and other requirements:
 
    1. <strong>Centralized identity-based authentication</strong> for users and service accounts (with SSO and MFA using Okta OIDC IdP and other Authentication Methods)
@@ -155,7 +161,7 @@ https://imaginea.gitbooks.io/consul-devops-handbook/content/deployment_strategy.
 
 ## Proof of Production Viability
 
-<a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1652579825/consul-promote-in-az-550x342_a87mri.png"><img align="right" alt="promotion" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1652579825/consul-promote-in-az-550x342_a87mri.png"></a>
+<a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1652579825/consul-promote-in-az-550x342_a87mri.png"><img align="right" alt="promotion" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1652579825/consul-promote-in-az-550x342_a87mri.png"></a>
 We also provide procedures and automation to <strong>prove</strong> that production-grade mechanisms can actually respond effectively to various stresses:
 
    1. ACL blocks access to those not authorized
@@ -176,7 +182,7 @@ We also provide procedures and automation to <strong>prove</strong> that product
    1. Alerts are issued when trouble is recognized (due to injection of troubling events)
    <br /><br />
 
-<a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1656899266/zerotrust-maturity-22-06-1456x1326_x0xvl6.png"><img align="right" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1656899266/zerotrust-maturity-22-06-1456x1326_x0xvl6.png"></a>Along the way, we point out where each aspect of <a target="_blank" href="https://www.cisa.gov/sites/default/files/publications/CISA%20Zero%20Trust%20Maturity%20Model_Draft.pdf">Zero-Trust Maturity Model</a>, Well-Architected, SOC2, and ISO 27000 frameworks are achieved.
+<a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1656899266/zerotrust-maturity-22-06-1456x1326_x0xvl6.png"><img align="right" alt="Zero Trust Maturity" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1656899266/zerotrust-maturity-22-06-1456x1326_x0xvl6.png"></a>Along the way, we point out where each aspect of <a target="_blank" href="https://www.cisa.gov/sites/default/files/publications/CISA%20Zero%20Trust%20Maturity%20Model_Draft.pdf">Zero-Trust Maturity Model</a>, Well-Architected, SOC2, and ISO 27000 frameworks are achieved.
 
 <hr />
 
