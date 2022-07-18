@@ -1,11 +1,57 @@
-<a target="_blank" href="https://github.com/hashicorp-services/consul-in-prod"># hashicorp-services/consul-in-prod</a>
+<a target="_blank" href="https://github.com/hashicorp-services/consul-in-prod"># hashicorp-services/consul-in-prod = Reference Implementation GitBook</a>
 
-This book provides instructions to create -- for <strong>production</strong> usage -- 
-the most common use of <strong>HashiCorp Consul</strong> within a Global 2000 enterprise.
+NOTE: This document does not cover setting up of a stand-alone Consul cluster for demonstration purposes.
 
-QUESTION: Who grants access to services partners to this org/repo ?
+<a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/iaas-high-availability-disaster-recovery"><img alt="Azure sample" src="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/media/ha-decision-tree.png"></a>
+
+This book provides to <strong>customer-facing implementers</strong> instructions and automation to create -- for <strong>production</strong> usage -- secure and highly-available implementations of <strong>HashiCorp Consul</strong> common within Global 2000 enterprises.
+Specifically:
+   * HashiCorp PS (Professional Services)
+   * HashiCorp CS SEs (Customer Service Engineers)
+   * Consultants within HashiCorp services partners
+   <br /><br />
+
+QUESTION: Who grants access to services partners to this org/repo on GitBook?
+
+This is being collaboratively developed and maintained by these teams:
+   * Domain Architecture (Wilson Mar, Frank Hane)
+   * SE SME (Ancil McBarnett)
+   * PS  (Iman, John Boero, Jim Sullivan)
+   * PSE (Austin Workman)
+   * Operations Experience
+   * (Josh Wolfer)
+   * (Nathan Pearce)
+   * (Tony Pulickal)
+   * Education (Tu Nguyen)
+   * Reference Architecture (Chloe)
+   * SE (segment leaders in US, EMEA, APJ)
+   * Field (Thomas Kula)
+   * CSA
+   * CSM
+   * IS
+   * Consul Marketing PMM (Van Phan)
+   * Consul Product Management (Usha Kodali, Abhishek Tiwari)
+   * (Matt Peters)
+   * Dev Evangelists (Rosemary Wang)
+   <br /><br />
+
+QUESTION: Who should be included?
+
+<hr />
+
+## About Consul
 
 Consul is designed to be multi-cloud, multi-platform, for <a href="#RefArch">multiple application types</a>.
+
+Terminology:
+
+Datacenter : This is defined by your design. It should ideally be a set of nodes that have low latency connections between them and are part of a private network.
+
+Agent: Any Consul process is an agent. It can run in one of two modes - server and client.
+
+Server : A Consul process that maintains cluster state, responds to RPC queries from clients, elects leaders using the Raft consensus protocol and participates in WAN gossip between datacenters.
+
+Client : A stateless Consul process that accepts queries from applications and forwards them to server nodes.
 
 <a name="Clouds"></a>
 
@@ -13,9 +59,11 @@ Consul is designed to be multi-cloud, multi-platform, for <a href="#RefArch">mul
 
 This presents procedures and automation for creating Consul within each cloud:
 * AWS
-* Azure
+* Azure (<a target="_blank" href="https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations">abbreviations</a>)
 * Google (GCP)
 <br /><br />
+
+NOTE: We will be structuring our implementation scripts to make it easier to customize across different clouds.
 
 
 <a name="OS-Platforms"></a>
@@ -33,35 +81,54 @@ Each implementation has an edition/variation for each technical platform:
 
 ## Reference Architecture Scale
 
-To ensure production-level reliability at Enterpise scale, each implementation here is based on HashiCorp's Reference Architecture, which consists of:
+To ensure production-level reliability at Enterpise scale, each implementation here is based on <a target="_blank" href="https://learn.hashicorp.com/tutorials/consul/reference-architecture">, which consists of:
+<a target="_blank" href="https://learn.hashicorp.com/tutorials/consul/kubernetes-reference-architecture">for Kubernetes</a>.
+It consists of:
 
-* <a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1655690643/vault-multi-region-map-1298x728_yjgvcv.png"><img align="right" alt="multi-region" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1655690643/vault-multi-region-map-1298x728_yjgvcv.png"></a>Two regions peered together, with 5 nodes per datacenter across 3 Availability Zones (each a separate VPC)
+* <a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1655690643/vault-multi-region-map-1298x728_yjgvcv.png"><img align="right" alt="multi-region" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1655690643/vault-multi-region-map-1298x728_yjgvcv.png"></a>Two regions <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/guide/security/access-azure-kubernetes-service-cluster-api-server">peered</a> together, with 5 nodes per datacenter across 3 Availability Zones (each a separate VPC)
 
-* <a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1658153413/app-east-west-968x897_nspfgj.png"><img align="right" alt="app layers" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1658153413/app-east-west-968x897_nspfgj.png"></a>Although Consul works with multiple platform technologies, a Linux-based sample e-commerce application (HashiCups?) running in Kubernetes with a server node for each of these APIs:
+   * https://github.com/hashicorp/engineering-docs/tree/main/consul (private)
+   <br /><br />
+
+* <a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1658153413/app-east-west-968x897_nspfgj.png"><img align="right" alt="app layers" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1658153413/app-east-west-968x897_nspfgj.png"></a> Although Consul works with multiple platform technologies, a Linux-based sample e-commerce application (HashiCups?) running in Kubernetes with a server node for each of these APIs:
    * front-end
    * product
    * shipment
    * payment (external)
    <br /><br />
 
-   (Not included are mail/SMS, ratings, observability, analytics, etc.) 
+   (Not included are Redis cache, Elastisearch (parse logs), mail/SMS, ratings, observability, analytics, etc.)<a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/ecommerce-website-running-in-secured-ase">*</a> <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/scalable-ecommerce-web-app">*</a>
+
+   TODO: Create a diagram to add in the <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/browse/">Azure Reference Architecture diagrams</a> with <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/multi-tier-app-disaster-recovery">HA/DR</a>
+
+* Alternative HA-capable apps:
+
+   <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/magento/magento-azure">Magento (e-commerce) in AKS</a>?
+
+   https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/app-service-web-app/multi-region
+
+   https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/multi-tier-app-disaster-recovery-experiment
+
+   https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/wordpress
 
 <a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1652637715/consul-svc-regis-1584x1552_jnnu9g.png"><img align="right" alt="Registry" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1652637715/consul-svc-regis-1584x1552_jnnu9g.png"></a>
 As each service is instantiated, its configuration enables Consul to detect it and add it to its Service Registry, and securely route network traffic to them, even across disparate platforms (via a Consul API Gateway).
 
 <a name="Implementations"></a>
 
-## Global Network Mesh Implementations
+## Global App Network Mesh Implementations
+
+NOTE: We avoid the use of the industry term "Service Mesh" to avoid competitive comparisons with competitors because that's a subset of what HashiCorp offers.
 
 <a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1652200423/consult-multi-envoy-1734x972_ymgi7l.png"><img align="right" alt="consul with envoy" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1652200423/consult-multi-envoy-1734x972_ymgi7l.png"></a>
 In each app server node, a Consul sidecar enables a <strong>Consul Global Mesh</strong> which directs traffic across multiple clouds and platform technologies:
 <ul>
-A. Other nodes within the same Kubernetes app cluster<br />
+A. Amonth app nodes within the same app cluster<br />
 B. Database (MySQL, PostgreSQL, Oracle) outside Kubernetes<br />
 C. AWS EC2 image running in AWS<br />
-D. AWS ECS (Elastic Container Service)<br />
+D. AWS ECS (Elastic Container Service) <a target="_blank" href="https://www.hashicorp.com/events/webinars/how-comcast-runs-consul-service-mesh-on-amazon-ecs">VID</a><br />
 E. AWS EKS (Elastic Kubernetes Service) with Service Mesh <br />
-F. VMWare hypervisor communicating with Kubernetes<br />
+F. VMWare registry image of hypervisor communicating with Kubernetes<br />
 G. Pivotal Cloud Foundary<br />
 H. RedHat OpenShift<br />
 I. Serverless (AWS Lambda, Azure & GCP Functions) running within clouds<br />
@@ -70,17 +137,24 @@ I. Serverless (AWS Lambda, Azure & GCP Functions) running within clouds<br />
 
 <a name="DevSecOps"></a>
 
-## DevSecOps
+## DevSecOps Workflow
 
-To save time, enable collaboration, ensure repeatability, and avoid mistakes, the <a name="Requirements">Consul features above</a> are instantiated using <strong>modern DevSecOps principles</strong>:
+<a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/devsecops-infrastructure-as-code"><img alt="Azure CI/CD" width="200" src="https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/media/devsecops-for-iac.png"></a> 
+To save time, enable collaboration, ensure repeatability, and avoid mistakes, the <a name="ConsulFeatures">Consul features above</a> are instantiated using <strong>modern DevSecOps principles</strong>:
 
-* Version control code with code reviews (in GitHub)
-* Infrastructure-as-Code HashiCorp Terraform and Bash shell scripts 
-* Helm charts
-* Automated CI/CD (GitHub Actions) for speed and comprehensive security scanning
-* Dockerized (Docker Compose)
 * Self-serve Shift-left for developer efficiency (TFSec on desktops)
+* Version control code with code reviews (in GitHub)
+* Automated CI/CD (GitHub Actions) for speed and comprehensive security scanning
+   <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/devsecops-in-github"><img alt="GitHub on Azure" src="https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/media/devsecops-in-github-data-flow.png"></a>
+
+* Infrastructure-as-Code HashiCorp <a target="_blank" href="https://www.youtube.com/watch?v=uBfUN6PemIk" title="Provision to Production with Terraform Enterprise">Terraform Enterprise Workspaces</a> invoked by Bash shell scripts. 
+
+* Dockerized (Docker Compose) from a Docker Registry
 * Automated policy enforcement to replace long waits for manual approvals
+
+* Helm charts
+* <a target="_blank" href="https://aws.amazon.com/solutions/implementations/aws-landing-zone/">AWS Landing Zones</a>  <a target="_blank" href="https://learn.hashicorp.com/tutorials/terraform/aws-control-tower-aft">using Terraform</a> (<a target="_blank" href="https://www.youtube.com/watch?v=PE1bhqS8BI8" title="by Welly Siauw & David Wright Mar 23, 2022">VIDEO</a>)
+* Azure/Terraform-provider-azapi <a target="_blank" href="https://www.youtube.com/watch?v=6DLyQNJWpgA" title="Key Considerations for Getting HashiCorp Terraform into Production by Iman and Chris from Microsoft May 24, 2022">VIDEO</a>
 <br /><br />
 
 
@@ -96,16 +170,25 @@ Among the many variations, here are the priorities for development:
    * https://github.com/hashicorp/field-workshops-consul
    * https://github.com/hashicorp-services/enablement-consul-instruqt
    * https://github.com/hashicorp-services/enablement-vault-instruqt
-   * https://github.com/samgabrail/web-blog-vault
+   * https://github.com/hashicorp/terraform-aws-consul-starter
+   * https://github.com/hashicorp/terraform-azure-consul-ent-starter
+   * https://github.com/hashicorp/learn-instruqt contains source files for interactive scenarios at https://learn.hashicorp.com
    <br /><br />
 
 1. AWS
+
 1. Azure
 <br /><br />
 
-<a name="Requirements"></a>
+This being Enterprise, we assume use of <a target="_blank" href="https://www.youtube.com/watch?v=_VsEa5H3Jz0">multiple cloud accounts</a>.
 
-## Consul features used
+<hr />
+
+<a name="ConsulFeatures"></a>
+
+## HashiCorp products and features used
+
+<a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1653578783/consul-tf-vault-1162x809_lypmvs.png"><img alt="TF Vault Consul" width="1162" height="809" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1653578783/consul-tf-vault-1162x809_lypmvs.png"></a>
 
 <a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1653578783/consul-tf-vault-1162x809_lypmvs.png"><img align="right" alt="consul tf vault" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1653578783/consul-tf-vault-1162x809_lypmvs.png"></a>
 Each <a href="#Implementations">implementation above</a> makes use of Enterprise-grade Consul and Vault to satisfy Zero-Trust and other requirements:
@@ -113,8 +196,8 @@ Each <a href="#Implementations">implementation above</a> makes use of Enterprise
    1. <strong>Centralized identity-based authentication</strong> for users and service accounts (with SSO and MFA using Okta OIDC IdP and other Authentication Methods)
    1. <strong>Centralized secrets</strong> management (using Vault)
    1. <strong>Encryption</strong> of app data in transit and at rest (using Vault)
+   
    1. Segregation of app data into different <strong>data Namespaces</strong> to reduce access to data in case of breach (which we assume will occur)
-
    1. <strong>Admin partitions</strong> in a centralized service registry in the Consul Key/Value store - (this is the core feature desired by most enterprises)
 
    1. <strong>Segmentation of network</strong> traffic to restrict network access in case of breach (which we assume will occur)
@@ -127,7 +210,15 @@ Each <a href="#Implementations">implementation above</a> makes use of Enterprise
    1. <strong>Automated upgrades</strong> of versions
    <br /><br />
 
-https://imaginea.gitbooks.io/consul-devops-handbook/content/deployment_strategy.html
+<hr />
+
+## Additional Services/Utilities
+
+For a production-level systems in enterprises:
+
+* Log collection and analytics, such as ServiceNow, Elasticache, Datadog, New Relic, etc.
+
+* Dashboard run analytics - on Azure:<br /><a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/logging/unified-logging"><img alt="Dashboard in Azure" width="1681" height="942" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1658173196/azure-log-dashboard-1681x942_n1pjer.png"></a>
 
 <hr />
 
@@ -135,9 +226,9 @@ https://imaginea.gitbooks.io/consul-devops-handbook/content/deployment_strategy.
 
 ## Construction Stages
 
-<strong>Construction</strong> of each implementation consists of the following logical steps (all using automated means where applicable):
+<strong>Manual steps to create</strong> each <a href="#Implementations">implementation</a>, explained like the <a target="_blank" href="https://imaginea.gitbooks.io/consul-devops-handbook/content/deployment_strategy.html">Imagina GitBook</a>) are organized into these logical stages (using automated means where applicable):
 
-   1. <strong>Laptop setup</strong> - on each builder laptop: Git, Vault, Consul, Terraform, GPG, and Linux utilities
+   1. <strong>Laptop setup</strong> - on each builder laptop: Linux utilities, VSCode, Git, Vault, Consul, Terraform, GPG, etc.
    1. <strong>GitHub account setup</strong> - with SSH and GPG certificates
    1. <strong>Clone GitHub repos</strong> - each of the Reference Architecture components
 
@@ -156,13 +247,16 @@ https://imaginea.gitbooks.io/consul-devops-handbook/content/deployment_strategy.
 
    1. <a href="#Proving"><strong>Prove</strong> - that production-grade mechanisms can actually respond effectively to various stresses</a>
 
+TODO: Create a flowchart such as <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/cicd-for-azure-vms">this</a>
+
+
 
 <a name="Proving"></a>
 
 ## Proof of Production Viability
 
 <a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1652579825/consul-promote-in-az-550x342_a87mri.png"><img align="right" alt="promotion" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1652579825/consul-promote-in-az-550x342_a87mri.png"></a>
-We also provide procedures and automation to <strong>prove</strong> that production-grade mechanisms can actually respond effectively to various stresses:
+We also provide procedures and automation to <strong>prove</strong> that production-grade mechanisms can actually respond effectively to various stresses (planned and unplanned outages):
 
    1. ACL blocks access to those not authorized
    1. As each new service comes online, Consul "discovers" them
@@ -182,7 +276,12 @@ We also provide procedures and automation to <strong>prove</strong> that product
    1. Alerts are issued when trouble is recognized (due to injection of troubling events)
    <br /><br />
 
+   <a target="_blank" href="https://www.youtube.com/watch?v=CPI6W3LK0-g">VIDEO</a>
+
 <a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1656899266/zerotrust-maturity-22-06-1456x1326_x0xvl6.png"><img align="right" alt="Zero Trust Maturity" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1656899266/zerotrust-maturity-22-06-1456x1326_x0xvl6.png"></a>Along the way, we point out where each aspect of <a target="_blank" href="https://www.cisa.gov/sites/default/files/publications/CISA%20Zero%20Trust%20Maturity%20Model_Draft.pdf">Zero-Trust Maturity Model</a>, Well-Architected, SOC2, and ISO 27000 frameworks are achieved.
+
+   * <a target="_blank" href="https://docs.google.com/document/d/1zpL5o3uIzCIJbganpZ32CcmDUXBqmImwfa9AVF_uBFo">PRD-EDU-020-Enterprise architecture documentation</a>
+   <br /><br />
 
 <hr />
 
@@ -201,3 +300,9 @@ and https://github.com/hashicorp/field-workshops-consul
 
 1. <a target="_blank" href="https://docs.google.com/presentation/d/e/2PACX-1vSjSPGg74hbque88aAPgaNnPXKiY6S7KvkbLiH30g0rIUMYyumN8OCJaL3wq_bQasG78dLaUp0tk3JK/pub?start=false&loop=false&delayms=3000">Multi-Cloud Service Networking with Consul Enterprise</a> - An operational <strong>half day</strong> multi-product Zero Trust workshop across AWS, Azure, and GCP. (Sales/Consul Team)
 
+<hr />
+
+## Other Reference Implementations
+
+* https://github.com/mspnp/app-service-environments-ILB-deployments
+illustrated/described by https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/enterprise-integration/ase-high-availability-deployment
