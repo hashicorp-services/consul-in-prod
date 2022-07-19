@@ -4,23 +4,24 @@
 
 This book provides to <strong>customer-facing implementers</strong> instructions and automation to create -- for <strong>production</strong> usage -- secure and highly-available implementations of <strong>HashiCorp Consul</strong> common within Global 2000 enterprises.
 Specifically:
+
+   * HashiCorp Presales Solution Engineering (Kyle Rarey, Ram Ramhariram, Nathan Pearce)
+   * SE SME (Ancil McBarnett)
+   * HashiCorp Field CTOs (Jake Lundberg)
    * HashiCorp PS (Professional Services)
+   * HashiCorp Implementation Services: (Austin Workman, )
    * HashiCorp CS SEs (Customer Service Engineers)
-   * Consultants within HashiCorp services partners
+   * Consultants within HashiCorp services partners ()
    <br /><br />
 
-QUESTION: Who grants access to services partners to this org/repo on GitBook?
-
-This is being collaboratively developed and maintained by these teams:
+This is being collaboratively developed and maintained by the above plus these stakeholders: TODO: Get the org names correct!
    * Domain Architecture (Wilson Mar, Frank Hane)
-   * SE SME (Ancil McBarnett)
-   * PS  (Iman, John Boero, Jim Sullivan)
-   * PSE (Austin Workman)
+   * PSE (Iman, John Boero, Jim Sullivan)
+   * Education (Tu Nguyen)
    * Operations Experience
    * (Josh Wolfer)
-   * (Nathan Pearce)
    * (Tony Pulickal)
-   * Education (Tu Nguyen)
+   * (Matt Peters)
    * Reference Architecture (Chloe)
    * SE (segment leaders in US, EMEA, APJ)
    * Field (Thomas Kula)
@@ -29,11 +30,12 @@ This is being collaboratively developed and maintained by these teams:
    * IS
    * Consul Marketing PMM (Van Phan)
    * Consul Product Management (Usha Kodali, Abhishek Tiwari)
-   * (Matt Peters)
    * Dev Evangelists (Rosemary Wang)
    <br /><br />
 
 QUESTION: Who should be included?
+
+QUESTION: Who grants access to services partners to this org/repo on GitBook?
 
 <hr />
 
@@ -47,21 +49,24 @@ Datacenter : This is defined by your design. It should ideally be a set of nodes
 
 Agent: Any Consul process is an agent. It can run in one of two modes - server and client.
 
-Server : A Consul process that maintains cluster state, responds to RPC queries from clients, elects leaders using the Raft consensus protocol and participates in WAN gossip between datacenters.
-
 Client : A stateless Consul process that accepts queries from applications and forwards them to server nodes.
+
+<strong>Consul servers</strong> are the components that do the heavy lifting. They store information about services and key/value information. An odd number of servers is necessary to avoid stalemate issues during elections. A Consul process maintains cluster state, responds to RPC queries from clients, elects leaders using the Raft consensus protocol and participates in WAN gossip between datacenters. 
 
 <a name="Clouds"></a>
 
 ## Clouds
 
 This presents procedures and automation for creating Consul within each cloud:
-* AWS
-* Azure (<a target="_blank" href="https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations">abbreviations</a>)
-* Google (GCP)
+1. <strong>Google (GCP)</strong> - HashiCorp's hands-on Instruqt labs run on GCP. So production scripts may leverage scripts to install assets.
+
+1. <strong>AWS</strong>
+
+1. <strong>Azure</strong>
 <br /><br />
 
-NOTE: We will be structuring our implementation scripts to make it easier to customize across different clouds.
+NOTE: We aim to structure our implementation scripts to make it easier to customize across different clouds.
+
 
 
 <a name="OS-Platforms"></a>
@@ -100,7 +105,9 @@ It consists of:
    https://github.com/hashicorp-services/ansible-role-consul/tree/aworkman_testing
 
    * Inside Kubernetes
+   <br /><br />
 
+References:
    * https://github.com/hashicorp/engineering-docs/tree/main/consul (private)
    <br /><br />
 
@@ -180,19 +187,24 @@ Among the many variations, here are the priorities for development:
 
 1. GCP - Ubuntu - core Kubernetes
 
-   This is because we initially leverage scripts from Instruqt labs, which run on GCP.
-   * https://github.com/hashicorp/field-workshops-consul
+   * https://github.com/hashicorp/field-workshops-consul by Thomas Kula (PreSales Solutions Engineering) has slides for aws, azure, gcp, multi-cloud. Has an instructor guide to Instruqt tracks.
+
+   * https://github.com/hashicorp/learn-instruqt contains source files for interactive scenarios at https://learn.hashicorp.com
    * https://github.com/hashicorp-services/enablement-consul-instruqt
    * https://github.com/hashicorp-services/enablement-vault-instruqt
-   * https://github.com/hashicorp/terraform-aws-consul-starter
-   * https://github.com/hashicorp/terraform-azure-consul-ent-starter
-   * https://github.com/hashicorp/learn-instruqt contains source files for interactive scenarios at https://learn.hashicorp.com
    <br /><br />
 
 1. AWS
 
+   * https://github.com/hashicorp-services/accelerator-aws-consul/ (internal) by Kyle Rarey (Implementation Services)
+   * https://github.com/hashicorp/terraform-aws-consul-starter 
+   <br /><br />
+
 1. Azure
-<br /><br />
+
+   * https://github.com/hashicorp/terraform-azure-consul-ent-starter
+   <br /><br />
+
 
 This being Enterprise, we assume use of <a target="_blank" href="https://www.youtube.com/watch?v=_VsEa5H3Jz0">multiple cloud accounts</a>.
 
@@ -245,8 +257,10 @@ For a production-level systems in enterprises:
 
 <strong>Manual steps to create</strong> each <a href="#Implementations">implementation</a>, explained like the <a target="_blank" href="https://imaginea.gitbooks.io/consul-devops-handbook/content/deployment_strategy.html">Imagina GitBook</a>) are logically organized into these sequential stages (using automated means where applicable):
 
-   1. <strong>Laptop setup</strong> - on each builder laptop: Linux utilities, VSCode, Git, Vault, Consul, Terraform, GPG, etc.
-   1. <strong>GitHub account setup</strong> - with SSH and GPG certificates
+   1. <strong>Design values for variables</a>, abbreviations (such as <a target="_blank" href="https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations">Azure's</a>)
+
+   1. <strong>Laptop setup</strong> - on each builder laptop: XCode, Homebrew, wget, tree, Jinja, VSCode, Git, GPG, Vault, Consul, Terraform, Packer, Docker, Docker Compose, etc.
+   1. <strong>GitHub setup</strong> - with SSH and GPG certificates
    1. <strong>Clone GitHub repos</strong> - each of the Reference Architecture components
 
    1. <strong>Establish Auth Method</strong> - for SSO and MFA by each user on Okta, etc.
@@ -254,6 +268,7 @@ For a production-level systems in enterprises:
    1. <strong>Establish cloud accounts</strong> - with special Administrator access used during setup and regular accounts
    1. <strong>Establish cloud account</strong> for managing backup data (assuming breach of other accounts)
 
+   1. <strong>Obtain Enterprise license</strong> - from a HashiCorp employee
    1. <strong>Customize settings</strong> - names for each datacenter, region, etc.
    1. <strong>Run GitHub Actions</strong> - using scripts for CI/CD, with security scans (secret detection, TFSec, etc.)
    1. <strong>Establish Vault</strong> - using CI/CD invoking Terraform
@@ -262,10 +277,9 @@ For a production-level systems in enterprises:
    
    1. <strong>Define Intentions and ACLs</strong> - using Consul to manage the sample application
 
-   1. <a href="#Proving"><strong>Prove</strong> - that production-grade mechanisms can actually respond effectively to various stresses</a>
+   1. <a href="#Proving"><strong>Prove</strong> - that production-grade mechanisms can actually respond effectively to various operational and security stresses</a>
 
 TODO: Create a flowchart such as <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/cicd-for-azure-vms">this</a>
-
 
 
 <a name="Proving"></a>
