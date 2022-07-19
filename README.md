@@ -1,5 +1,20 @@
 <a target="_blank" href="https://github.com/hashicorp-services/consul-in-prod"># hashicorp-services/consul-in-prod = Reference Implementation GitBook</a>
 
+## What's Inside
+
+1. <a href="#Audience">Audience</a>
+1. <a href="#Implementations">Implementations</a>
+1. <a href="#Clouds">Clouds</a>
+1. <a href="#OS-Platforms">OS Platforms</a>
+1. <a href="#RefArch">Production Reference Architecture Scale, Scope, and Objectives</a>
+1. <a href="#Implementations">Global App Network Mesh Implementations</a>
+1. <a href="#DevSecOps">DevSecOps Workflow</a>
+1. <a href="#ConstructionStages">Construction Stages</a> (part of Adoption Plan)
+1. <a href="#Proving">Proof of Production Viability</a> (part of Reliability Plan)
+1. <a name="#Resources">Workshop Resources</a>
+
+<hr />
+
 ## Audience
 
 This book provides to <strong>customer-facing implementers</strong> instructions and automation to create -- for <strong>production</strong> usage -- secure and highly-available implementations of <strong>HashiCorp Consul</strong> common within Global 2000 enterprises.
@@ -17,12 +32,12 @@ Specifically:
 This is being collaboratively developed and maintained by the above plus these stakeholders: TODO: Get the org names correct!
    * Domain Architecture (Wilson Mar, Frank Hane)
    * PSE (Iman, John Boero, Jim Sullivan)
-   * Education (Tu Nguyen)
+   * Education (Tu Nguyen, Daniele Carcasole)
    * Operations Experience
    * (Josh Wolfer)
    * (Tony Pulickal)
    * (Matt Peters)
-   * Reference Architecture (Chloe)
+   * Reference Architecture (Chloe Cota)
    * SE (segment leaders in US, EMEA, APJ)
    * Field (Thomas Kula)
    * CSA
@@ -43,46 +58,32 @@ QUESTION: Who grants access to services partners to this org/repo on GitBook?
 
 Consul is designed to be <a href="#Clouds">multi-cloud</a>, <a href="#OS-Platforms">multi-platform</a>, for <a href="#RefArch">multiple application types</a>.
 
-Terminology:
-
-Datacenter : This is defined by your design. It should ideally be a set of nodes that have low latency connections between them and are part of a private network.
-
-Agent: Any Consul process is an agent. It can run in one of two modes - server and client.
-
-Client : A stateless Consul process that accepts queries from applications and forwards them to server nodes.
-
-<strong>Consul servers</strong> are the components that do the heavy lifting. They store information about services and key/value information. An odd number of servers is necessary to avoid stalemate issues during elections. A Consul process maintains cluster state, responds to RPC queries from clients, elects leaders using the Raft consensus protocol and participates in WAN gossip between datacenters. 
-
-For a quorum to be healthy it is necessary for every node to know its neighbors. 
-The list of neighbors is kept in the <strong>Raft peers list</strong> in file <tt>consul-data-directory/raft/peers.json</tt>.
-
-```
-root@server1:~# cat /var/consul/raft/peers.json
-["192.168.1.12:8300","192.168.1.11:8300","192.168.1.13:8300"]
-```
-
-There should be at least 2 nodes there in order to form a quorum and elect a leader on startup.
-
-The “peer set” is the set of all members participating in log replication. 
-For Consul's purposes, all server nodes are in the peer set of the local datacenter.
-
-Also in the data dictionary are serf/local.snapshot & serf/remote.snapshot. 
-Serf contains the list of connected servers and clients like alive/not-alive state.
-
-Outage recovery might sometimes involve manual editing of the peers list where the machines are not recoverable.
-
-
+<a name="Implementations"></a>
 <a name="Clouds"></a>
 
-## Clouds
+## Implementations
 
 This presents procedures and automation for creating Consul within each cloud:
+
 1. <strong>Google (GCP)</strong> - HashiCorp's hands-on Instruqt labs run on GCP. So production scripts may leverage scripts to install assets.
+
+   * https://github.com/hashicorp/field-workshops-consul by Thomas Kula (PreSales Solutions Engineering) has slides for aws, azure, gcp, multi-cloud. Has an instructor guide to Instruqt tracks.
+
+   * https://github.com/hashicorp/learn-instruqt contains source files for interactive scenarios at https://learn.hashicorp.com
+   * https://github.com/hashicorp-services/enablement-consul-instruqt
+   * https://github.com/hashicorp-services/enablement-vault-instruqt
+   <br /><br />
 
 1. <strong>AWS</strong>
 
+   * https://github.com/hashicorp-services/accelerator-aws-consul/ (internal) by Kyle Rarey (Implementation Services)
+   * https://github.com/hashicorp/terraform-aws-consul-starter 
+   <br /><br />
+
 1. <strong>Azure</strong>
-<br /><br />
+
+   * https://github.com/hashicorp/terraform-azure-consul-ent-starter
+   <br /><br />
 
 NOTE: We aim to structure our implementation scripts to make it easier to customize across different clouds.
 
@@ -106,28 +107,24 @@ Each implementation has an edition/variation for each technical platform:
 <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/iaas-high-availability-disaster-recovery"><img alt="Azure sample" align="right" width="200" src="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/media/ha-decision-tree.png"></a>
 NOTE: This document does not cover setting up of a single stand-alone Consul cluster for purpose of demonstration.
 
-To ensure production-level reliability at Enterpise scale, each implementation here is based on <a target="_blank" href="https://learn.hashicorp.com/tutorials/consul/reference-architecture">, which consists of:
-<a target="_blank" href="https://learn.hashicorp.com/tutorials/consul/kubernetes-reference-architecture">for Kubernetes</a>.
-It consists of:
+<a target="_blank" href="https://learn.hashicorp.com/tutorials/consul/reference-architecture"> <a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1655690643/vault-multi-region-map-1298x728_yjgvcv.png"><img align="right" alt="multi-region" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1655690643/vault-multi-region-map-1298x728_yjgvcv.png"></a>
+To ensure production-level reliability at Enterpise scale, each implementation here is based on two regions <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/guide/security/access-azure-kubernetes-service-cluster-api-server">peered</a> together, with 5 nodes per datacenter across 3 Availability Zones (each a separate VPC).
 
-* <a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1655690643/vault-multi-region-map-1298x728_yjgvcv.png"><img align="right" alt="multi-region" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1655690643/vault-multi-region-map-1298x728_yjgvcv.png"></a>Two regions <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/guide/security/access-azure-kubernetes-service-cluster-api-server">peered</a> together, with 5 nodes per datacenter across 3 Availability Zones (each a separate VPC).
-
-   Consul can be installed into several platforms:
-
-   * Inside AWS using Terraform</br />
+   * Inside AWS created using Terraform:<br />
    https://github.com/hashicorp-services/ansible-role-consul/tree/aworkman_testing
 
-   * On-prem using Ansible Playbooks<br />
+   * On-prem using Ansible Playbooks:<br />
    https://github.com/hashicorp-services/ansible-role-consul/tree/aworkman_testing
-
-   * Inside Kubernetes
    <br /><br />
+
+The Consul Docker container is retrieved into <a target="_blank" href="https://learn.hashicorp.com/tutorials/consul/kubernetes-reference-architecture">Kubernetes</a>.
 
 References:
    * https://github.com/hashicorp/engineering-docs/tree/main/consul (private)
    <br /><br />
 
-* <a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1658153413/app-east-west-968x897_nspfgj.png"><img align="right" alt="app layers" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1658153413/app-east-west-968x897_nspfgj.png"></a> Although Consul works with multiple platform technologies, a Linux-based sample e-commerce application (HashiCups?) running in Kubernetes with a server node for each of these APIs:
+<a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1658153413/app-east-west-968x897_nspfgj.png"><img align="right" alt="app layers" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1658153413/app-east-west-968x897_nspfgj.png"></a> 
+Although Consul works with multiple platform technologies, a Linux-based sample e-commerce application (HashiCups?) running in Kubernetes with a server node for each of these APIs:
    * front-end web server
    * product
    * shipment
@@ -195,33 +192,6 @@ Automated CI/CD (GitHub Actions) for speed and comprehensive security scanning. 
 * <a target="_blank" href="https://aws.amazon.com/solutions/implementations/aws-landing-zone/">AWS Landing Zones</a>  <a target="_blank" href="https://learn.hashicorp.com/tutorials/terraform/aws-control-tower-aft">using Terraform</a> (<a target="_blank" href="https://www.youtube.com/watch?v=PE1bhqS8BI8" title="by Welly Siauw & David Wright Mar 23, 2022">VIDEO</a>)
 * Azure/Terraform-provider-azapi <a target="_blank" href="https://www.youtube.com/watch?v=6DLyQNJWpgA" title="Key Considerations for Getting HashiCorp Terraform into Production by Iman and Chris from Microsoft May 24, 2022">VIDEO</a>
 <br /><br />
-
-
-<a name="Implementations"></a>
-
-## Implementions
-
-Among the many variations, here are the priorities for development:
-
-1. GCP - Ubuntu - core Kubernetes
-
-   * https://github.com/hashicorp/field-workshops-consul by Thomas Kula (PreSales Solutions Engineering) has slides for aws, azure, gcp, multi-cloud. Has an instructor guide to Instruqt tracks.
-
-   * https://github.com/hashicorp/learn-instruqt contains source files for interactive scenarios at https://learn.hashicorp.com
-   * https://github.com/hashicorp-services/enablement-consul-instruqt
-   * https://github.com/hashicorp-services/enablement-vault-instruqt
-   <br /><br />
-
-1. AWS
-
-   * https://github.com/hashicorp-services/accelerator-aws-consul/ (internal) by Kyle Rarey (Implementation Services)
-   * https://github.com/hashicorp/terraform-aws-consul-starter 
-   <br /><br />
-
-1. Azure
-
-   * https://github.com/hashicorp/terraform-azure-consul-ent-starter
-   <br /><br />
 
 
 <hr />
@@ -293,15 +263,16 @@ For a production-level systems in enterprises:
    
    1. <strong>Obtain Enterprise license</strong> - from a HashiCorp employee (Solution Engineer, etc.)
    1. <strong>Customize settings</strong> - names for each datacenter, region, etc.
+   1. <strong>Run security scans</strong> - on Terraform while on laptop (secret detection, TFSec, etc.)
 
-      Run GitHub Actions or CircleCI CI/CD which invoke Bash shell scripts and Terraform to create folders, etc.:
+      Run GitHub Actions or CircleCI CI/CD which invoke bootstraping Bash shell scripts and Terraform which load variables, create folders, bootstrap, configure to reboot automatically, etc.
 
-   1. <strong>Run bootstraping scripts</strong> to run security scans (secret detection, TFSec, etc.), create folders, bootstrap, configure to reboot automatically, etc.
    1. <strong>Establish Vault</strong> - 
    1. <strong>Establish apps and database</strong>
-   1. <strong>Establish Consul</strong> with segrated namespaces, segmented networks, read replicas, automated backup, etc. per <a href="#ConsulFeatures">Features listed above</a>.
+   1. <strong>Establish Consul</strong> per <a href="#ConsulFeatures">Features listed above</a> (with segrated namespaces, segmented networks, read replicas, automated backup, etc.)
    
    1. <strong>Define Intentions and ACLs</strong> - using Consul to manage the sample application
+   1. <strong>Estimate costs</strong> - (using <a target="_blank" href="https://docs.cycloid.io/open-source-software/terracost.html">Terracost</a>)
 
    1. <a href="#Proving"><strong>Prove</strong> - that production-grade mechanisms can actually respond effectively to various operational and security stresses</a>
    1. Maintain system
