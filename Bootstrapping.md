@@ -40,4 +40,4 @@ Once you start the third node, you should see leader election taking place and o
 
 ## Manual Bootstrapping
 
-In versions of Consul prior to 0.4, bootstrapping was a manual process. For details on using the -bootstrap flag directly, see the manual bootstrapping guide. Manual bootstrapping is not recommended as it is more error-prone than automatic bootstrapping with -bootstrap-expect. It is recommended to use -bootstrap-expect but we mention this for completeness.
+In versions of Consul prior to 0.4, bootstrapping was a manual process. For details on using the <tt>-bootstrap</tt> flag directly, see the manual bootstrapping guide. Manual bootstrapping is not recommended as it is more error-prone than automatic bootstrapping with -bootstrap-expect. It is recommended to use -bootstrap-expect but we mention this for completeness.

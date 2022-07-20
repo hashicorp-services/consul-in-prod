@@ -31,9 +31,13 @@ Contents:
 <br /><br />
 
 Additional pages this summary page links to, alphabetically:
+* <a href="ClientConfiguration.md">Client Configuration</a>
 * <a href="DevSecOps.md">CI/CD DevSecOps</a>
+* <a href="ImpactAssessment.md">Impact Assessment</a>
 * <a href="Observability.md">Observability</a> (Log aggregation and Dashboard analytics)
 * <a href="ProjectMgmt.md">Project Management</a> to ensure inclusion during fast work
+* <a href="ServerConfiguration.md">Server Configuration</a>
+* <a href="SolutionDesign.md">Solution Design</a>
 * <a href="BestPractices.md">BestPractices.md</a> identified from interviews of each persona, based on the Well-Architected Framework
 
 
@@ -72,9 +76,12 @@ This is being collaboratively developed and maintained by the above plus these s
 
 Governance:
    * Hari
+   * Joe Weber
    <br /><br />
 
 > NOTE: This document presents best practices and tools which individual practioners are free to adjust as they see fit for each situation.
+
+During a Consul Accelerator Program (CAP) engagement, this document is modified to the customer.
 
 QUESTION: Who should be included?
 
@@ -111,7 +118,7 @@ TODO: Add performance nodes to <a target="_blank" href="https://learn.hashicorp.
 <a target="_blank" href="https://learn.hashicorp.com/tutorials/consul/reference-architecture"> <a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1655690643/vault-multi-region-map-1298x728_yjgvcv.png"><img align="right" alt="multi-region" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1655690643/vault-multi-region-map-1298x728_yjgvcv.png"></a>
 To ensure production-level reliability at Enterpise scale, each implementation here also addresses <strong>two regions</strong> <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/guide/security/access-azure-kubernetes-service-cluster-api-server">peered</a> together.
 
-<a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/iaas-high-availability-disaster-recovery"><em>From Microsoft :</em></a<br />
+<a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/iaas-high-availability-disaster-recovery"><em>This HA decison tree from Microsoft :</em></a><br />
 <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/media/ha-decision-tree.png><img alt="Azure HA/DR selection" width="200" src="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/media/ha-decision-tree.png"></a>
 
 
