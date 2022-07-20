@@ -28,6 +28,13 @@ Contents:
 1. <a href="#DevSecOps">DevSecOps Workflow</a>
 1. <a href="#Proving">Proof of Production Viability</a> (part of Reliability Plan)
 1. <a name="#Resources">Workshop Resources</a>
+<br /><br />
+
+Additional pages this summary page links to, alphabetically:
+* <a href="Observability.md">Observability</a> (Log aggregation and Dashboard analytics)
+* <a href="ProjectMgmt.md">Project Management</a> to ensure inclusion during fast work
+* <a href="BestPractices.md">BestPractices.md</a> identified from interviews of each persona, based on the Well-Architected Framework
+
 
 <hr />
 
@@ -62,6 +69,12 @@ This is being collaboratively developed and maintained by the above plus these s
    * Dev Evangelists (Rosemary Wang)
    <br /><br />
 
+Governance:
+   * Hari
+   <br /><br />
+
+> NOTE: This document presents best practices and tools which individual practioners are free to adjust as they see fit for each situation.
+
 QUESTION: Who should be included?
 
 QUESTION: Who grants access to services partners to this org/repo on GitBook?
@@ -80,27 +93,32 @@ Consul is available in several editions :
    * Licensed HCP cloud Consul (using HVN setup within the customer's app infrastructure)
    <br /><br />
 
-Because most enterprises want support contracts, 
-this document is focused on enterprise use in production, and does not cover setting up of an individual stand-alone Consul cluster for purpose of learning.
+Because most enterprises want support contracts, this document is focused on enterprise use in production, and does not cover setting up of an individual stand-alone Consul cluster for purpose of learning.
 
-<a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/iaas-high-availability-disaster-recovery"><img alt="Azure sample" align="right" width="200" src="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/media/ha-decision-tree.png"></a>
+HashiCorp maintains the cloud edition of Consul, Enterprise, and Terraform.
 
 
 <a name="multi-region"></a>
 
 ### Multi-Region Production Scope
 
+<a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1652208811/hashicor-consult-ref-arch-1033x401_veqcwx.png"><img alt="single datacenter" align="right" width="100" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1652208811/hashicor-consult-ref-arch-1033x401_veqcwx.png"></a>
+TODO: Add performance nodes to <a target="_blank" href="https://learn.hashicorp.com/tutorials/consul/reference-architecture">this Consul single-datacenter/region Reference Architecture</a>.
+
 <a target="_blank" href="https://learn.hashicorp.com/tutorials/consul/reference-architecture"> <a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1655690643/vault-multi-region-map-1298x728_yjgvcv.png"><img align="right" alt="multi-region" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1655690643/vault-multi-region-map-1298x728_yjgvcv.png"></a>
-To ensure production-level reliability at Enterpise scale, each implementation here is based on two regions <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/guide/security/access-azure-kubernetes-service-cluster-api-server">peered</a> together, with 5 nodes per datacenter across 3 Availability Zones (each a separate VPC) per region.
+To ensure production-level reliability at Enterpise scale, each implementation here also addresses <strong>two regions</strong> <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/guide/security/access-azure-kubernetes-service-cluster-api-server">peered</a> together, with 5 nodes per datacenter across 3 Availability Zones (each a separate VPC) per region.
+
+<a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/iaas-high-availability-disaster-recovery"><em>From Microsoft :</em></a<br />
+<a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/media/ha-decision-tree.png><img alt="Azure HA/DR selection" width="200" src="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/media/ha-decision-tree.png"></a>
 
 
 <a name="TheApp"></a>
 
 ## The App/System Managed by Consul
 
-Some system is needed for Consul to manage.
+An app is needed for Consul to manage.
+This document makes use of the HashiCups sample app maintained by HashiCorp.
 
-<a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1658153413/app-east-west-968x897_nspfgj.png"><img align="right" alt="app layers" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1658153413/app-east-west-968x897_nspfgj.png"></a> 
 Although Consul works with multiple platform technologies, a Linux-based sample e-commerce application (HashiCups?) running in Kubernetes with a server node for each of these APIs:
    * front-end web server
    * product
@@ -148,6 +166,9 @@ H. RedHat OpenShift<br />
 I. Serverless (AWS Lambda, Azure & GCP Functions) running within clouds<br />
 </ul>
 
+   * The Consul Docker container is retrieved into <a target="_blank" href="https://learn.hashicorp.com/tutorials/consul/kubernetes-reference-architecture">Kubernetes</a>.
+   <br /><br />
+
 Thus, Consul "future proofs" how enterprises securely manage networking between services.
 
 
@@ -155,8 +176,8 @@ Thus, Consul "future proofs" how enterprises securely manage networking between 
 
 ## HashiCorp products and features used
 
-<a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1653578783/consul-tf-vault-1162x809_lypmvs.png"><img align="right" alt="consul tf vault" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1653578783/consul-tf-vault-1162x809_lypmvs.png"></a>
-Each <a href="#Implementations">implementation above</a> makes use of the Enterprise edition of Consul and Vault to satisfy Zero-Trust and other requirements:
+<a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1658153413/app-east-west-968x897_nspfgj.png"><img align="right" alt="app layers" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1658153413/app-east-west-968x897_nspfgj.png"></a> 
+This document defines the features of Consul and Vault implemented :
 
    1. <strong>Centralized identity-based authentication</strong> for users and service accounts (with SSO and MFA using Okta OIDC IdP and other Authentication Methods)
    1. <strong>Centralized secrets</strong> management (using Vault)
@@ -176,17 +197,23 @@ Each <a href="#Implementations">implementation above</a> makes use of the Enterp
    <br /><br />
 
 
+<a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1656899266/zerotrust-maturity-22-06-1456x1326_x0xvl6.png"><img align="right" alt="Zero Trust Maturity" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1656899266/zerotrust-maturity-22-06-1456x1326_x0xvl6.png"></a>The objective of implementing Consul and Vault features is to enable Optimal achievement of what is defined in the <a target="_blank" href="https://www.cisa.gov/sites/default/files/publications/CISA%20Zero%20Trust%20Maturity%20Model_Draft.pdf">Zero-Trust Maturity Model</a>, SOC2, ISO 27000, and other security frameworks along with the Well-Architected Framework.
+
+
 <hr />
 
 <a name="ConstructionStages"></a>
 
 ## Construction Stages
 
+<a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1653578783/consul-tf-vault-1162x809_lypmvs.png"><img align="right" alt="consul tf vault" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1653578783/consul-tf-vault-1162x809_lypmvs.png"></a>
 <strong>Manual steps to create</strong> each <a href="#Implementations">implementation</a>, explained like the <a target="_blank" href="https://imaginea.gitbooks.io/consul-devops-handbook/content/deployment_strategy.html">Imagina GitBook</a>) are logically organized into these sequential stages (using automated means where applicable):
 
 TODO: Create a flowchart such as <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/cicd-for-azure-vms">this</a>
 
-   1. <a href="SolutionDesign.md">Design solution settings</a> - decide on values for variables (), abbreviations (such as <a target="_blank" href="https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations">Azure's</a>)
+   1. <a href="ProjectMgmt.md">Project Management</a> to ensure inclusion during fast work
+   1. <a href="Questions.md">Questions</a> for interviewing each persona, based on the comprehensive Well-Architected Framework
+   1. <a href="SolutionDesign.md">Design solution settings</a> - decide on values for variables, abbreviations (such as <a target="_blank" href="https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations">Azure's</a>)
 
    1. <strong>Laptop setup</strong> - on each builder laptop: XCode, Homebrew, wget, tree, Jinja, VSCode, Git, GPG, Vault, Consul, Terraform, Packer, Docker, Docker Compose, etc.
    1. <strong>GitHub setup</strong> - with SSH and GPG certificates
@@ -199,7 +226,7 @@ TODO: Create a flowchart such as <a target="_blank" href="https://docs.microsoft
    1. <strong>Establish cloud admin account</strong> for managing backup data (assuming breach of other accounts)
 
    1. <strong>Establish CI/CD DevSecOps systems</strong> <a href="#DevSecOps">described below</a>
-   1. <strong>Establish Ancilary systems</strong> (log aggregation, Dashboards, etc.) <a href="#Ancilary">described below</a>
+   1. <strong>Establish Observability systems</strong> (log <a href="#Logs">Log/SIEM</a>, <a href="#Dashboards">Dashboards</a>, etc.) <a href="#Observability">described below</a>
    1. <strong>Establish the App/system and databases</strong> <a href="#TheApp">described above</a>
 
    1. <strong>Customize settings</strong> - names for each datacenter, region, etc.
@@ -220,7 +247,8 @@ TODO: Create a flowchart such as <a target="_blank" href="https://docs.microsoft
 
 The list above provides a way to measure progress of the entire project.
 
-There are different construction steps for <a href="#Clouds">each cloud</a> and platform.
+> There are different construction steps for <a href="#Clouds">each cloud</a> and <a href="#OS-Platforms">platform</a> (defined below).
+
 
 <a name="Clouds"></a>
 
@@ -228,14 +256,16 @@ There are different construction steps for <a href="#Clouds">each cloud</a> and 
 
 This presents procedures and automation for creating Consul within each cloud:
 
-1. <strong>AWS</strong>
+Scripts to install assets for Instruqt labs may be used in production scripts.
 
-   * https://github.com/hashicorp-services/accelerator-aws-consul/ (internal) by Implementation Services (Kyle Rarey, Austin Workman) provides 
+1. <strong>AWS</strong> is the most popular cloud.
 
-   * https://github.com/hashicorp/terraform-aws-consul-starter 
+   * https://github.com/hashicorp-services/accelerator-aws-consul/ (internal) by Implementation Services (Kyle Rarey, Austin Workman) contains scripts used on customer sites
+
+   * https://github.com/hashicorp/terraform-aws-consul-starter by the Operations Experience team (Omar Khawaja and Sara Chandler) is deprecated.
    <br /><br />
 
-1. <strong>Google (GCP)</strong> - HashiCorp's hands-on Instruqt labs run on GCP. So production scripts may leverage scripts to install assets.
+1. <strong>Google (GCP)</strong> - HashiCorp's hands-on Instruqt labs run on GCP. 
 
    * https://github.com/hashicorp/field-workshops-consul by Thomas Kula (PreSales Solutions Engineering) has slides for aws, azure, gcp, multi-cloud. Has an instructor guide to Instruqt tracks.
 
@@ -250,7 +280,7 @@ This presents procedures and automation for creating Consul within each cloud:
 
    * https://github.com/hashicorp-services/accelerator-azure-consul/ doesn't exist yet
 
-   * https://github.com/hashicorp/terraform-azure-consul-ent-starter
+   * https://github.com/hashicorp/terraform-azure-consul-ent-starter by the Operations Experience team (Omar Khawaja and Sara Chandler) is deprecated.
    <br /><br />
 
 NOTE: We aim to structure our implementation scripts to make it easier to customize across different clouds.
@@ -262,12 +292,20 @@ NOTE: We aim to structure our implementation scripts to make it easier to custom
    https://github.com/hashicorp-services/ansible-role-consul/tree/aworkman_testing
    <br /><br />
 
-The Consul Docker container is retrieved into <a target="_blank" href="https://learn.hashicorp.com/tutorials/consul/kubernetes-reference-architecture">Kubernetes</a>.
-
 References:
    * https://github.com/hashicorp/engineering-docs/tree/main/consul (private)
    <br /><br />
 
+<em>Slide decks from</em> https://hashicorp.github.io/workshops/
+and https://github.com/hashicorp/field-workshops-consul
+
+1. <a target="_blank" href="https://docs.google.com/presentation/d/e/2PACX-1vRsbv2Y40V2Eb_7137-jjRbbyWUqdXGrTcxTjBlCdDseX0qbbrfpAobACQZcgcNWbHGdwiI-7xZ-FSk/pub?start=false&loop=false&delayms=3000">Intro to Consul Enterprise</a> - A two hour introductory workshop. (Sales/Consul Team or FM Team)
+
+1. <a target="_blank" href="https://docs.google.com/presentation/d/e/2PACX-1vRm4bc_k1d_ihqCB1WplZD7lNsUkCOtXxP4SlOeZmfpBMwc6lzVrY7aENhlagIqJKYoMTR_Q6TBaMVw/pub?start=false&loop=false&delayms=3000">Life of a Developer with Consul Enterprise</a> - A two hour container based progressive application delivery workshop. (Sales/Consul Team)
+
+1. <a target="_blank" href="https://docs.google.com/presentation/d/e/2PACX-1vQV_YViIEH-jFaInANvBtb4EnRGToU-ce1JR82GYqA68faH9ysQr4WPOVWhNpyigpstRDflXHOtLioy/pub?start=false&loop=false&delayms=3000">Network Infrastructure Automation with Consul Enterprise</a> - A two hour network acceleration workshop with Terraform and Consul-Terraform-Sync. (Sales/Consul Team)
+
+1. <a target="_blank" href="https://docs.google.com/presentation/d/e/2PACX-1vSjSPGg74hbque88aAPgaNnPXKiY6S7KvkbLiH30g0rIUMYyumN8OCJaL3wq_bQasG78dLaUp0tk3JK/pub?start=false&loop=false&delayms=3000">Multi-Cloud Service Networking with Consul Enterprise</a> - An operational <strong>half day</strong> multi-product Zero Trust workshop across AWS, Azure, and GCP. (Sales/Consul Team)
 
 <a name="OS-Platforms"></a>
 
@@ -275,9 +313,9 @@ References:
 
 Each implementation has an edition/variation for each technical platform:
 
-* Linux (Ubuntu RedHat)
+* MacOS is commonly used on laptop clients used by developers and administrators.
 
-* MacOS
+* Linux (Ubuntu RedHat)
 <br /><br />
 
 
@@ -304,32 +342,6 @@ Automated CI/CD (GitHub Actions) for speed and comprehensive security scanning. 
 * <a target="_blank" href="https://aws.amazon.com/solutions/implementations/aws-landing-zone/">AWS Landing Zones</a>  <a target="_blank" href="https://learn.hashicorp.com/tutorials/terraform/aws-control-tower-aft">using Terraform</a> (<a target="_blank" href="https://www.youtube.com/watch?v=PE1bhqS8BI8" title="by Welly Siauw & David Wright Mar 23, 2022">VIDEO</a>)
 * Azure/Terraform-provider-azapi <a target="_blank" href="https://www.youtube.com/watch?v=6DLyQNJWpgA" title="Key Considerations for Getting HashiCorp Terraform into Production by Iman and Chris from Microsoft May 24, 2022">VIDEO</a>
 <br /><br />
-
-
-<hr />
-
-<a name="Ancilary"></a>
-
-## Additional Services/Utilities
-
-For a production-level systems in enterprises:
-
-* Among https://www.consul.io/docs/download-tools
-
-   * https://github.com/gliderlabs/registrator = automatically registers and deregisters services for any Docker container by inspecting containers as they come online. See https://imaginea.gitbooks.io/consul-devops-handbook/content/registrator_deployment.html
-   <br /><br />
-
-* Log collection and analytics, such as 
-   * Prometheus
-   * ServiceNow
-   * Elasticache
-   * Datadog
-   * New Relic
-   * etc.
-   <br /><br />
-
-* Dashboard run analytics - on Azure:<br /><a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/logging/unified-logging"><img alt="Dashboard in Azure" width="1681" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1658173196/azure-log-dashboard-1681x942_n1pjer.png"></a>
-
 
 
 <hr />
@@ -361,27 +373,11 @@ We also provide procedures and automation to <strong>prove</strong> that product
 
    <a target="_blank" href="https://www.youtube.com/watch?v=CPI6W3LK0-g">VIDEO</a>
 
-<a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1656899266/zerotrust-maturity-22-06-1456x1326_x0xvl6.png"><img align="right" alt="Zero Trust Maturity" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1656899266/zerotrust-maturity-22-06-1456x1326_x0xvl6.png"></a>Along the way, we point out where each aspect of <a target="_blank" href="https://www.cisa.gov/sites/default/files/publications/CISA%20Zero%20Trust%20Maturity%20Model_Draft.pdf">Zero-Trust Maturity Model</a>, Well-Architected, SOC2, and ISO 27000 frameworks are achieved.
-
    * <a target="_blank" href="https://docs.google.com/document/d/1zpL5o3uIzCIJbganpZ32CcmDUXBqmImwfa9AVF_uBFo">PRD-EDU-020-Enterprise architecture documentation</a>
    <br /><br />
 
 <hr />
 
-<a name="Resources"></a>
-
-## Workshop Resources
-
-Slide decks from https://hashicorp.github.io/workshops/
-and https://github.com/hashicorp/field-workshops-consul
-
-1. <a target="_blank" href="https://docs.google.com/presentation/d/e/2PACX-1vRsbv2Y40V2Eb_7137-jjRbbyWUqdXGrTcxTjBlCdDseX0qbbrfpAobACQZcgcNWbHGdwiI-7xZ-FSk/pub?start=false&loop=false&delayms=3000">Intro to Consul Enterprise</a> - A two hour introductory workshop. (Sales/Consul Team or FM Team)
-
-1. <a target="_blank" href="https://docs.google.com/presentation/d/e/2PACX-1vRm4bc_k1d_ihqCB1WplZD7lNsUkCOtXxP4SlOeZmfpBMwc6lzVrY7aENhlagIqJKYoMTR_Q6TBaMVw/pub?start=false&loop=false&delayms=3000">Life of a Developer with Consul Enterprise</a> - A two hour container based progressive application delivery workshop. (Sales/Consul Team)
-
-1. <a target="_blank" href="https://docs.google.com/presentation/d/e/2PACX-1vQV_YViIEH-jFaInANvBtb4EnRGToU-ce1JR82GYqA68faH9ysQr4WPOVWhNpyigpstRDflXHOtLioy/pub?start=false&loop=false&delayms=3000">Network Infrastructure Automation with Consul Enterprise</a> - A two hour network acceleration workshop with Terraform and Consul-Terraform-Sync. (Sales/Consul Team)
-
-1. <a target="_blank" href="https://docs.google.com/presentation/d/e/2PACX-1vSjSPGg74hbque88aAPgaNnPXKiY6S7KvkbLiH30g0rIUMYyumN8OCJaL3wq_bQasG78dLaUp0tk3JK/pub?start=false&loop=false&delayms=3000">Multi-Cloud Service Networking with Consul Enterprise</a> - An operational <strong>half day</strong> multi-product Zero Trust workshop across AWS, Azure, and GCP. (Sales/Consul Team)
 
 <hr />
 
