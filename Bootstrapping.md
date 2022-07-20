@@ -1,4 +1,6 @@
-## Bootstrapping
+Bootstrapping.md
+
+<a target="_blank" href="https://github.com/hashicorp-services/consul-in-prod/">Menu</a>
 
 TODO: Edit content from https://imaginea.gitbooks.io/consul-devops-handbook/content/bootstrapping.html
 

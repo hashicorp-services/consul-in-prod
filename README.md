@@ -31,6 +31,7 @@ Contents:
 <br /><br />
 
 Additional pages this summary page links to, alphabetically:
+* <a href="DevSecOps.md">CI/CD DevSecOps</a>
 * <a href="Observability.md">Observability</a> (Log aggregation and Dashboard analytics)
 * <a href="ProjectMgmt.md">Project Management</a> to ensure inclusion during fast work
 * <a href="BestPractices.md">BestPractices.md</a> identified from interviews of each persona, based on the Well-Architected Framework
@@ -95,18 +96,20 @@ Consul is available in several editions :
 
 Because most enterprises want support contracts, this document is focused on enterprise use in production, and does not cover setting up of an individual stand-alone Consul cluster for purpose of learning.
 
-HashiCorp maintains the cloud edition of Consul, Enterprise, and Terraform.
+The HashiCorp cloud edition of Consul, Enterprise, and Terraform peered is used for "Cloud To Ground" peering connection to on-prem. servers maintained by enterprise customers. 
 
 
 <a name="multi-region"></a>
 
 ### Multi-Region Production Scope
 
+> The <a href="#SolutionDesign.md">baseline Solution Design</a> here assumes, for reliability, use of <strong>5 nodes per Consul datacenter</strong> across <strong>3 Availability Zones</strong> (each a separate VPC) within each region.
+
 <a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1652208811/hashicor-consult-ref-arch-1033x401_veqcwx.png"><img alt="single datacenter" align="right" width="100" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1652208811/hashicor-consult-ref-arch-1033x401_veqcwx.png"></a>
 TODO: Add performance nodes to <a target="_blank" href="https://learn.hashicorp.com/tutorials/consul/reference-architecture">this Consul single-datacenter/region Reference Architecture</a>.
 
 <a target="_blank" href="https://learn.hashicorp.com/tutorials/consul/reference-architecture"> <a target="_blank" href="https://res.cloudinary.com/dcajqrroq/image/upload/v1655690643/vault-multi-region-map-1298x728_yjgvcv.png"><img align="right" alt="multi-region" width="200" src="https://res.cloudinary.com/dcajqrroq/image/upload/v1655690643/vault-multi-region-map-1298x728_yjgvcv.png"></a>
-To ensure production-level reliability at Enterpise scale, each implementation here also addresses <strong>two regions</strong> <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/guide/security/access-azure-kubernetes-service-cluster-api-server">peered</a> together, with 5 nodes per datacenter across 3 Availability Zones (each a separate VPC) per region.
+To ensure production-level reliability at Enterpise scale, each implementation here also addresses <strong>two regions</strong> <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/guide/security/access-azure-kubernetes-service-cluster-api-server">peered</a> together.
 
 <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/iaas-high-availability-disaster-recovery"><em>From Microsoft :</em></a<br />
 <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/media/ha-decision-tree.png><img alt="Azure HA/DR selection" width="200" src="https://docs.microsoft.com/en-us/azure/architecture/example-scenario/infrastructure/media/ha-decision-tree.png"></a>
@@ -211,25 +214,23 @@ This document defines the features of Consul and Vault implemented :
 
 TODO: Create a flowchart such as <a target="_blank" href="https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/cicd-for-azure-vms">this</a>
 
-   1. <a href="ProjectMgmt.md">Project Management</a> to ensure inclusion during fast work
-   1. <a href="Questions.md">Questions</a> for interviewing each persona, based on the comprehensive Well-Architected Framework
-   1. <a href="SolutionDesign.md">Design solution settings</a> - decide on values for variables, abbreviations (such as <a target="_blank" href="https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations">Azure's</a>)
-
+   1. <a href="ProjectMgmt.md">Project Management</a> - tools and processes to ensure inclusion during organized and fast work
+   1. <a href="BestPractices.md">Questions</a> for interviewing each persona, based on the comprehensive Well-Architected Framework
+   1. <a href="SolutionDesign.md">Design solution settings</a> - decide on values of variables for datacenter, region, values for variables, abbreviations (such as <a target="_blank" href="https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations">Azure's</a>)
+   
+   1. <strong>Define least-privilege Roles</strong> - the actions allowed/disallowed for each persona (in role files)
+   1. <strong>Establish Auth Methods</strong> - Okta, etc. for SSO and MFA by each user
+   1. <strong>Establish cloud accounts</strong> - with special Administrator access used during setup and regular accounts. This being Enterprise, we assume use of <a target="_blank" href="https://www.youtube.com/watch?v=_VsEa5H3Jz0">multiple cloud accounts</a>.
+   1. <strong>Establish cloud admin account</strong> for managing backup data (assuming breach of other accounts)
+   
    1. <strong>Laptop setup</strong> - on each builder laptop: XCode, Homebrew, wget, tree, Jinja, VSCode, Git, GPG, Vault, Consul, Terraform, Packer, Docker, Docker Compose, etc.
    1. <strong>GitHub setup</strong> - with SSH and GPG certificates
    1. <strong>Clone GitHub template repos</strong> - each of the Reference Implementation components
 
-   1. <strong>Establish Auth Methods</strong> - Okta, etc. for SSO and MFA by each user
-   1. <strong>Define least-privilege Roles</strong> - the actions allowed/disallowed for each persona (in role files)
-   
-   1. <strong>Establish cloud accounts</strong> - with special Administrator access used during setup and regular accounts. This being Enterprise, we assume use of <a target="_blank" href="https://www.youtube.com/watch?v=_VsEa5H3Jz0">multiple cloud accounts</a>.
-   1. <strong>Establish cloud admin account</strong> for managing backup data (assuming breach of other accounts)
-
-   1. <strong>Establish CI/CD DevSecOps systems</strong> <a href="#DevSecOps">described below</a>
-   1. <strong>Establish Observability systems</strong> (log <a href="#Logs">Log/SIEM</a>, <a href="#Dashboards">Dashboards</a>, etc.) <a href="#Observability">described below</a>
+   1. <a href="DevSecOps.md">Establish CI/CD DevSecOps systems</a>
+   1. <a href="#Observability">Establish Observability systems</a> (log <a href="#Logs">Log/SIEM</a>, <a href="#Dashboards">Dashboards</a>, etc.) used during troubleshooting and managerial reviews
    1. <strong>Establish the App/system and databases</strong> <a href="#TheApp">described above</a>
 
-   1. <strong>Customize settings</strong> - names for each datacenter, region, etc.
    1. <strong>Run security scans</strong> - on Terraform while on laptop (secret detection, TFSec, etc.)
 
       Run GitHub Actions or CircleCI CI/CD which invoke bootstraping Bash shell scripts and Terraform which load variables, create folders, bootstrap, configure to reboot automatically, etc.
