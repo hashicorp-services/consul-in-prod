@@ -1,6 +1,7 @@
-Bootstrapping.md
+## Bootstrapping
 
 <a target="_blank" href="https://github.com/hashicorp-services/consul-in-prod/">Menu</a>
+<hr />
 
 TODO: Edit content from https://imaginea.gitbooks.io/consul-devops-handbook/content/bootstrapping.html
 
@@ -10,7 +11,7 @@ Before a Consul cluster can begin to service requests, a server node must be ele
 Thus, the first nodes that are started are generally the server nodes.
 Bootstrapping is the process of joining these initial server nodes into a cluster.
 
-The recommended way to bootstrap is to use the <tt><strong>-bootstrap-expect</strong></pre> option. 
+The recommended way to bootstrap is to use the <tt><strong>-bootstrap-expect</strong></tt> option. 
 This option informs Consul of the expected number of server nodes and automatically starts the leader election process when that many servers are available. 
 
 To prevent inconsistencies and split-brain situations (that is, clusters where multiple servers consider themselves leader), 
@@ -18,7 +19,6 @@ all servers should either specify the same value for <tt>-bootstrap-expect</tt> 
 Only servers that specify a value will attempt to bootstrap the cluster.
 
 <a target="_blank" href="https://www.consul.io/docs/internals/consensus.html#deployment_table">HashiCorp recommends</a> 3 or 5 total servers per datacenter. 
-A single server deployment is highly discouraged as data loss is inevitable in a failure scenario. 
 
 Here we are considering a 3 server cluster. We can start Node1, Node2, and Node3 with the -bootstrap-expect flag set to 3 in each. 
 Once the first node is started, you should see a message like below:
